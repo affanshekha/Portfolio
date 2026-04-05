@@ -23,9 +23,6 @@ export default async function DashboardLayout({
             <Link href="/dashboard" className="hover:text-slate-900">
               Home
             </Link>
-            <Link href="/dashboard/portfolio" className="hover:text-slate-900">
-              Portfolio
-            </Link>
             {session?.user?.role === "ADMIN" ? (
               <Link href="/admin" className="hover:text-slate-900">
                 Admin
