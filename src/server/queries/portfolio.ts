@@ -33,7 +33,7 @@ export async function listPortfoliosForUser(userId: string) {
     include: {
       theme: true,
       _count: {
-        select: {
+        select: { 
           projects: true,
           experiences: true,
           skills: true,
