@@ -1,0 +1,249 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum MediaAssetType {
+  PROFILE
+  PROJECT
+  GALLERY
+}
+
+enum CVUploadStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model User {
+  id            String      @id @default(cuid())
+  name          String?
+  email         String      @unique
+  passwordHash  String?
+  role          UserRole    @default(USER)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  portfolios    Portfolio[]
+  cvUploads     CVUpload[]
+  actorAuditLog AuditLog[]  @relation("AuditLogActor")
+
+  @@index([role])
+}
+
+model Portfolio {
+  id             String         @id @default(cuid())
+  userId         String
+  title          String
+  headline       String?
+  bio            String?
+  slug           String         @unique
+  themeId        String?
+  isPublished    Boolean        @default(false)
+  publishedAt    DateTime?
+  seoTitle       String?
+  seoDescription String?
+  contactEmail   String?
+  contactPhone   String?
+  location       String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  theme          Theme?         @relation(fields: [themeId], references: [id], onDelete: SetNull)
+  skills         Skill[]
+  experiences    Experience[]
+  educations     Education[]
+  projects       Project[]
+  certifications Certification[]
+  socialLinks    SocialLink[]
+  mediaAssets    MediaAsset[]
+  testimonials   Testimonial[]
+  auditLogs      AuditLog[]
+
+  @@index([userId])
+  @@index([themeId])
+  @@index([slug])
+  @@index([isPublished])
+}
+
+model Skill {
+  id          String    @id @default(cuid())
+  portfolioId String
+  name        String
+  category    String?
+  level       Int?
+  sortOrder   Int       @default(0)
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@index([sortOrder])
+}
+
+model Experience {
+  id          String    @id @default(cuid())
+  portfolioId String
+  company     String
+  title       String
+  startDate   DateTime?
+  endDate     DateTime?
+  isCurrent   Boolean   @default(false)
+  description String?
+  location    String?
+  sortOrder   Int       @default(0)
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@index([sortOrder])
+}
+
+model Education {
+  id           String    @id @default(cuid())
+  portfolioId  String
+  school       String
+  degree       String?
+  fieldOfStudy String?
+  startDate    DateTime?
+  endDate      DateTime?
+  description  String?
+  sortOrder    Int       @default(0)
+  portfolio    Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@index([sortOrder])
+}
+
+model Project {
+  id           String    @id @default(cuid())
+  portfolioId  String
+  title        String
+  description  String?
+  technologies String[]
+  githubUrl    String?
+  liveUrl      String?
+  imageUrl     String?
+  sortOrder    Int       @default(0)
+  portfolio    Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@index([sortOrder])
+}
+
+model Certification {
+  id            String    @id @default(cuid())
+  portfolioId   String
+  name          String
+  issuer        String?
+  issueDate     DateTime?
+  credentialUrl String?
+  portfolio     Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+}
+
+model SocialLink {
+  id          String    @id @default(cuid())
+  portfolioId String
+  platform    String
+  url         String
+  sortOrder   Int       @default(0)
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@index([sortOrder])
+}
+
+model MediaAsset {
+  id          String         @id @default(cuid())
+  portfolioId String
+  type        MediaAssetType
+  url         String
+  altText     String?
+  sortOrder   Int            @default(0)
+  portfolio   Portfolio      @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@index([type])
+  @@index([sortOrder])
+}
+
+model Testimonial {
+  id          String    @id @default(cuid())
+  portfolioId String
+  authorName  String
+  authorRole  String?
+  content     String
+  sortOrder   Int       @default(0)
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@index([sortOrder])
+}
+
+model Theme {
+  id           String      @id @default(cuid())
+  name         String
+  key          String      @unique
+  description  String?
+  previewImage String?
+  isActive     Boolean     @default(true)
+  configSchema Json?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  portfolios   Portfolio[]
+
+  @@index([isActive])
+}
+
+model FeatureFlag {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  name        String
+  description String?
+  isEnabled   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isEnabled])
+}
+
+model CVUpload {
+  id            String         @id @default(cuid())
+  userId         String
+  fileUrl        String
+  extractedText  String?
+  parsedJson     Json?
+  status         CVUploadStatus @default(PENDING)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+model AuditLog {
+  id          String     @id @default(cuid())
+  actorUserId String?
+  action      String
+  entityType  String
+  entityId    String?
+  metadata    Json?
+  portfolioId String?
+  createdAt   DateTime   @default(now())
+  actor       User?      @relation("AuditLogActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+  portfolio   Portfolio? @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
+
+  @@index([actorUserId])
+  @@index([entityType, entityId])
+  @@index([portfolioId])
+  @@index([createdAt])
+}
