@@ -1,3 +1,11 @@
+import NextAuth from "next-auth";
+import { NextResponse } from "next/server";
+
+import { authConfig } from "@/lib/auth.config";
+import { isAdmin } from "@/lib/permissions";
+
+const { auth } = NextAuth(authConfig);
+
 import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";

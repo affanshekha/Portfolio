@@ -1,3 +1,8 @@
+import { compare } from "bcryptjs";
+import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
+
+import { authConfig } from "./auth.config";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
@@ -6,6 +11,7 @@ import { db } from "./db";
 import { loginSchema } from "./validations/auth";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  ...authConfig,
   session: {
     strategy: "jwt",
   },
