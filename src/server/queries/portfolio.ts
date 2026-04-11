@@ -1,5 +1,16 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+
+export const portfolioInclude = {
+  theme: true,
+  skills: { orderBy: { sortOrder: "asc" } },
+  experiences: { orderBy: { sortOrder: "asc" } },
+  educations: { orderBy: { sortOrder: "asc" } },
+  projects: { orderBy: { sortOrder: "asc" } },
+  certifications: { orderBy: { issueDate: "desc" } },
+  socialLinks: { orderBy: { sortOrder: "asc" } },
+  mediaAssets: { orderBy: { sortOrder: "asc" } },
+  testimonials: { orderBy: { sortOrder: "asc" } },
 import { db } from "../../lib/db";
 
 export const portfolioInclude = {
