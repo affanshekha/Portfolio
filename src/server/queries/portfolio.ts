@@ -11,6 +11,19 @@ export const portfolioInclude = {
   socialLinks: { orderBy: { sortOrder: "asc" } },
   mediaAssets: { orderBy: { sortOrder: "asc" } },
   testimonials: { orderBy: { sortOrder: "asc" } },
+import { db } from "../../lib/db";
+
+export const portfolioInclude = {
+  theme: true,
+  skills: { orderBy: { sortOrder: "asc" as const } },
+  experiences: { orderBy: { sortOrder: "asc" as const } },
+  educations: { orderBy: { sortOrder: "asc" as const } },
+  projects: { orderBy: { sortOrder: "asc" as const } },
+  certifications: { orderBy: { issueDate: "desc" as const } },
+  certifications: true,
+  socialLinks: { orderBy: { sortOrder: "asc" as const } },
+  mediaAssets: { orderBy: { sortOrder: "asc" as const } },
+  testimonials: { orderBy: { sortOrder: "asc" as const } },
 };
 
 export async function getPortfolioById(id: string) {
@@ -45,6 +58,7 @@ export async function listPortfoliosForUser(userId: string) {
       theme: true,
       _count: {
         select: {
+        select: { 
           projects: true,
           experiences: true,
           skills: true,
