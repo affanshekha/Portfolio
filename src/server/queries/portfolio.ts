@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { db } from "../../lib/db";
 
 export const portfolioInclude = {
   theme: true,
@@ -8,6 +9,7 @@ export const portfolioInclude = {
   educations: { orderBy: { sortOrder: "asc" as const } },
   projects: { orderBy: { sortOrder: "asc" as const } },
   certifications: { orderBy: { issueDate: "desc" as const } },
+  certifications: true,
   socialLinks: { orderBy: { sortOrder: "asc" as const } },
   mediaAssets: { orderBy: { sortOrder: "asc" as const } },
   testimonials: { orderBy: { sortOrder: "asc" as const } },
@@ -45,6 +47,7 @@ export async function listPortfoliosForUser(userId: string) {
       theme: true,
       _count: {
         select: {
+        select: { 
           projects: true,
           experiences: true,
           skills: true,
